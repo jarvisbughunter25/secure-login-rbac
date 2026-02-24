@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+.pytest_cache/
+.coverage
+htmlcov/
+instance/
+.mypy_cache/
+.vscode/*.code-workspace
+app/static/uploads/avatars/*
+!app/static/uploads/avatars/.gitkeep

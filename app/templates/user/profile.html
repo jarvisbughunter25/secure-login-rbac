@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings | Secure Access Portal{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <div class="profile-layout">
+    <article class="dashboard-card profile-sidebar">
+      <img src="{{ avatar_url(user) }}" alt="{{ user.display_name }} avatar" class="profile-avatar-large">
+      <h2>{{ user.display_name }}</h2>
+      <p>{{ user.email }}</p>
+      <span class="role-badge role-{{ user.role.value }}">{{ user.role.value|upper }}</span>
+
+      <form method="post" action="{{ url_for('user.update_profile_avatar') }}" enctype="multipart/form-data" class="profile-form compact">
+        {{ avatar_form.hidden_tag() }}
+        <label for="avatar">Upload profile photo</label>
+        <div class="file-picker" data-file-picker>
+          {{ avatar_form.avatar(id='avatar', class_='file-input', data_file_input='true') }}
+          <button type="button" class="file-picker-btn" data-file-trigger>Browse File</button>
+          <span class="file-picker-name" data-file-name>No file selected</span>
+          <button type="button" class="file-picker-clear" data-file-clear aria-label="Clear selected file" hidden>x</button>
+        </div>
+        <p class="hint">Max size {{ avatar_max_mb }}MB. Allowed: png, jpg, jpeg, webp.</p>
+        {% for error in avatar_form.avatar.errors %}<p class="error">{{ error }}</p>{% endfor %}
+        <button type="submit" class="secondary-button">Update Photo</button>
+      </form>
+      {% if user.avatar_filename %}
+        <form
+          method="post"
+          action="{{ url_for('user.remove_profile_avatar') }}"
+          class="profile-form compact remove-avatar-form"
+          data-confirm="Remove current profile photo?"
+          data-confirm-title="Remove Photo"
+          data-confirm-ok="Yes, Remove"
+          data-confirm-cancel="Keep Photo"
+          data-confirm-variant="danger"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="danger-button">Remove Photo</button>
+        </form>
+      {% endif %}
+    </article>
+
+    <div class="profile-main-stack">
+      <article class="dashboard-card">
+        <h1>Profile Details</h1>
+        <p>Keep your account identity and contact information up to date.</p>
+
+        <form method="post" action="{{ url_for('user.update_profile_details') }}" class="profile-form" novalidate>
+          {{ details_form.hidden_tag() }}
+
+          <label for="full_name">Full name</label>
+          {{ details_form.full_name(id='full_name', class_='input', placeholder='Your full name') }}
+          {% for error in details_form.full_name.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <label for="username">Username</label>
+          {{ details_form.username(id='username', class_='input') }}
+          {% for error in details_form.username.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <label for="email">Email</label>
+          {{ details_form.email(id='email', class_='input') }}
+          {% for error in details_form.email.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <label for="bio">Bio</label>
+          {{ details_form.bio(id='bio', class_='input textarea-input', rows='4', placeholder='Short profile bio (optional)') }}
+          {% for error in details_form.bio.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <button type="submit" class="primary-button">Save Profile</button>
+        </form>
+      </article>
+
+      <article class="dashboard-card">
+        <h2>Change Password</h2>
+        <p>Use a strong password and rotate regularly for better account security.</p>
+
+        <form method="post" action="{{ url_for('user.update_profile_password') }}" class="profile-form" novalidate>
+          {{ password_form.hidden_tag() }}
+
+          <label for="current_password">Current password</label>
+          {{ password_form.current_password(id='current_password', class_='input', data_password_toggle='true') }}
+          {% for error in password_form.current_password.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <label for="new_password">New password</label>
+          {{ password_form.new_password(id='new_password', class_='input', data_password_toggle='true', data_password_strength='true') }}
+          <p class="hint">Use 10+ chars with upper, lower, number, and special character.</p>
+          {% for error in password_form.new_password.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <label for="confirm_password">Confirm new password</label>
+          {{ password_form.confirm_password(id='confirm_password', class_='input', data_password_toggle='true') }}
+          {% for error in password_form.confirm_password.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+          <button type="submit" class="primary-button">Update Password</button>
+        </form>
+      </article>
+
+      <article class="dashboard-card">
+        <h2>Quick Access</h2>
+        <p>Jump to home, members directory, or admin tools based on your role permissions.</p>
+        <div class="action-grid compact-grid">
+          <a class="action-tile" href="{{ url_for('user.home') }}">
+            <span class="action-title">Open Home</span>
+            <span class="action-subtitle">Go to main workspace</span>
+          </a>
+          <a class="action-tile" href="{{ url_for('user.directory') }}">
+            <span class="action-title">View Members Directory</span>
+            <span class="action-subtitle">See public role listings</span>
+          </a>
+          {% if user.role.value == 'admin' %}
+            <a class="action-tile" href="{{ url_for('admin.dashboard') }}">
+              <span class="action-title">Open Admin Panel</span>
+              <span class="action-subtitle">Manage system accounts</span>
+            </a>
+          {% endif %}
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

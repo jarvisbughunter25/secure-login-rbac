@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Secure Access Portal{% endblock %}
+
+{% block head_extra %}
+  {% if turnstile_enabled %}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="auth-grid">
+  <article class="info-panel">
+    <h1>Secure Login</h1>
+    <p>Authenticate with strong credentials and layered verification controls.</p>
+    <ul>
+      <li>Argon2 password protection</li>
+      <li>JWT HttpOnly session cookie</li>
+      <li>Brute-force defense and lockout</li>
+    </ul>
+  </article>
+
+  <article class="form-card">
+    <h2>Welcome Back</h2>
+    <form method="post" novalidate data-validate="login">
+      {{ form.hidden_tag() }}
+
+      <label for="email">Email</label>
+      {{ form.email(id="email", class_="input") }}
+      {% for error in form.email.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+      <label for="password">Password</label>
+      {{ form.password(id="password", class_="input", data_password_toggle="true") }}
+      {% for error in form.password.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+      {% if turnstile_enabled %}
+        <div class="captcha-block">
+          <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
+        </div>
+      {% else %}
+        <label for="captcha_answer">Human verification</label>
+        <div class="captcha-line">
+          <p class="captcha-question" data-captcha-question>{{ captcha_question }}</p>
+          <button
+            type="button"
+            class="icon-ghost-button"
+            data-captcha-refresh
+            data-captcha-url="{{ url_for('auth.refresh_captcha', scope='login') }}"
+            aria-label="Refresh captcha challenge"
+          >
+            refresh
+          </button>
+        </div>
+        {{ form.captcha_answer(id="captcha_answer", class_="input", placeholder="Enter answer") }}
+        {% for error in form.captcha_answer.errors %}<p class="error">{{ error }}</p>{% endfor %}
+      {% endif %}
+
+      <button type="submit" class="primary-button">Login</button>
+    </form>
+    <p class="switch-text">New user? <a href="{{ url_for('auth.register') }}">Create account</a></p>
+  </article>
+</section>
+{% endblock %}

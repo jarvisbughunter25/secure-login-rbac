@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}413 Payload Too Large{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <div class="dashboard-card">
+    <h1>413 - Upload Too Large</h1>
+    <p>The uploaded file exceeds the allowed size.</p>
+    <a class="primary-button inline-action" href="{{ url_for('user.profile') if g.current_user else url_for('auth.login') }}">Continue</a>
+  </div>
+</section>
+{% endblock %}

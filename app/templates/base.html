@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Secure Access Portal{% endblock %}</title>
+    <script>
+      (() => {
+        const themeKey = "sap-theme";
+        try {
+          const savedTheme = localStorage.getItem(themeKey);
+          if (savedTheme === "dark" || savedTheme === "light") {
+            document.documentElement.setAttribute("data-theme", savedTheme);
+          } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.setAttribute("data-theme", "dark");
+          }
+        } catch (_error) {
+          // Keep default light theme if storage access fails.
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <span class="badge-dot"></span>
+          <a class="brand" href="{{ url_for('index') }}">Secure Access Portal</a>
+        </div>
+
+        <nav class="nav-actions">
+          <button
+            type="button"
+            class="theme-toggle"
+            data-theme-toggle
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+            title="Toggle light/dark mode"
+          >
+            <span class="theme-icon" data-theme-icon aria-hidden="true"></span>
+            <span class="theme-toggle-label" data-theme-label>Light</span>
+          </button>
+
+          {% if g.current_user %}
+            <div class="profile-menu" data-profile-menu>
+              <button type="button" class="profile-toggle" aria-expanded="false" aria-label="Open profile menu">
+                <img src="{{ avatar_url(g.current_user) }}" alt="Profile avatar" class="avatar-img">
+                <span class="profile-meta">
+                  <strong>{{ g.current_user.display_name }}</strong>
+                  <small>{{ g.current_user.role.value|upper }}</small>
+                </span>
+                <span class="profile-caret">▾</span>
+              </button>
+
+              <div class="profile-dropdown" role="menu">
+                <a href="{{ url_for('user.home') }}" class="profile-menu-item">Home</a>
+                <a href="{{ url_for('user.profile') }}" class="profile-menu-item">Profile</a>
+                {% if g.current_user.role.value == 'admin' %}
+                  <div class="profile-submenu" data-profile-submenu>
+                    <button
+                      type="button"
+                      class="profile-menu-item submenu-toggle"
+                      data-submenu-toggle
+                      aria-expanded="false"
+                    >
+                      <span>Admin Panel</span>
+                      <span class="submenu-caret">▸</span>
+                    </button>
+                    <div class="submenu-links" data-submenu-links>
+                      <a href="{{ url_for('admin.dashboard') }}" class="profile-menu-item submenu-item">
+                        Manage Users/Admins
+                      </a>
+                      <a href="{{ url_for('admin.add_users') }}" class="profile-menu-item submenu-item">
+                        Add Users
+                      </a>
+                      <a href="{{ url_for('user.directory') }}" class="profile-menu-item submenu-item">
+                        Members
+                      </a>
+                    </div>
+                  </div>
+                {% else %}
+                  <a href="{{ url_for('user.directory') }}" class="profile-menu-item">Members</a>
+                {% endif %}
+
+                <div class="dropdown-separator"></div>
+
+                <form
+                  method="post"
+                  action="{{ url_for('auth.logout') }}"
+                  class="profile-logout-form"
+                  data-confirm="Are you sure you want to logout?"
+                  data-confirm-title="Logout"
+                  data-confirm-ok="Yes"
+                  data-confirm-cancel="No"
+                  data-confirm-variant="danger"
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="profile-logout">Logout</button>
+                </form>
+              </div>
+            </div>
+          {% else %}
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+          {% endif %}
+        </nav>
+      </header>
+
+      <main class="content-area">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+    </div>
+
+    <div class="confirm-modal-backdrop" data-confirm-modal hidden>
+      <div
+        class="confirm-modal-panel"
+        data-confirm-dialog
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmModalTitle"
+        aria-describedby="confirmModalMessage"
+      >
+        <h3 id="confirmModalTitle" data-confirm-title>Confirm Action</h3>
+        <p id="confirmModalMessage" class="confirm-modal-message" data-confirm-message></p>
+        <div class="confirm-modal-actions">
+          <button type="button" class="confirm-modal-btn confirm-modal-cancel" data-confirm-cancel>Cancel</button>
+          <button type="button" class="confirm-modal-btn confirm-modal-confirm" data-confirm-accept>Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/validation.js') }}" defer></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

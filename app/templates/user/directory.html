@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Members Directory | Secure Access Portal{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <div class="dashboard-card">
+    <h1>Members Directory</h1>
+    <p>This view is read-only. You can see which accounts are Admin or User.</p>
+
+    <div class="members-summary">
+      <span class="role-badge role-admin">Admins: {{ admin_count }}</span>
+      <span class="role-badge role-user">Users: {{ user_count }}</span>
+    </div>
+
+    <div class="table-shell">
+      <table class="members-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Username</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in users %}
+            <tr>
+              <td>
+                <div class="member-cell">
+                  <img src="{{ avatar_url(member) }}" alt="{{ member.display_name }} avatar" class="member-avatar">
+                  <div>
+                    <strong>{{ member.display_name }}</strong>
+                  </div>
+                </div>
+              </td>
+              <td>{{ member.username }}</td>
+              <td><span class="role-badge role-{{ member.role.value }}">{{ member.role.value|upper }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Secure Access Portal{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <article class="dashboard-card home-hero">
+    <div class="home-hero-copy">
+      <p class="home-kicker">Cybersecurity Internship Workspace</p>
+      <h1>Security Operations Home</h1>
+      <p>
+        Welcome back, {{ user.display_name }}. This is your central workspace for secure account operations,
+        role-based controls, and internship task progress.
+      </p>
+
+      <div class="action-grid">
+        <a class="action-tile action-tile-primary" href="{{ url_for('user.profile') }}">
+          <span class="action-title">Open Profile Settings</span>
+          <span class="action-subtitle">Update identity, photo, and password</span>
+        </a>
+        {% if user.role.value == 'admin' %}
+          <a class="action-tile" href="{{ url_for('admin.dashboard') }}">
+            <span class="action-title">Manage Users/Admins</span>
+            <span class="action-subtitle">Role, status, unlock, delete operations</span>
+          </a>
+          <a class="action-tile" href="{{ url_for('admin.add_users') }}">
+            <span class="action-title">Add User/Admin</span>
+            <span class="action-subtitle">Create new accounts from admin panel</span>
+          </a>
+        {% endif %}
+        <a class="action-tile" href="{{ url_for('user.directory') }}">
+          <span class="action-title">View Members</span>
+          <span class="action-subtitle">Check public role directory</span>
+        </a>
+      </div>
+    </div>
+
+    <aside class="home-hero-panel">
+      <h3>Session Shield</h3>
+      <ul class="home-health-list">
+        <li><span>Identity</span><strong>{{ user.display_name }}</strong></li>
+        <li><span>Role</span><strong>{{ user.role.value|upper }}</strong></li>
+        <li><span>Account</span><strong>{{ 'Active' if user.is_active else 'Inactive' }}</strong></li>
+        <li><span>Last Login</span><strong>{{ user.last_login_at or 'First session' }}</strong></li>
+      </ul>
+    </aside>
+  </article>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <h3>Total Users</h3>
+      <p>{{ total_users }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Admins</h3>
+      <p>{{ admin_count }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Users</h3>
+      <p>{{ user_count }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Active Accounts</h3>
+      <p>{{ active_count }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Locked Accounts</h3>
+      <p>{{ locked_count }}</p>
+    </article>
+  </div>
+
+  <div class="home-grid">
+    <article class="dashboard-card">
+      <h2>Platform Highlights</h2>
+      <p>Core security features currently active in this deployment.</p>
+      <ul class="home-checklist">
+        <li><span class="check-dot"></span>Role-based access controls for `Admin` and `User` flows.</li>
+        <li><span class="check-dot"></span>Strong password policy with secure Argon2 hashing.</li>
+        <li><span class="check-dot"></span>JWT session cookies with server-side protected routes.</li>
+        <li><span class="check-dot"></span>Account lockout and CAPTCHA for abuse mitigation.</li>
+      </ul>
+    </article>
+
+    <article class="dashboard-card">
+      <h2>Quick Guide</h2>
+      <p>Simple flow to operate this portal professionally.</p>
+      <ul class="home-checklist">
+        <li><span class="check-dot"></span>Open Profile and keep your account details updated.</li>
+        <li><span class="check-dot"></span>Use Members to verify role visibility for all accounts.</li>
+        {% if user.role.value == 'admin' %}
+          <li><span class="check-dot"></span>Use Admin Panel to manage users, status, unlock, and delete.</li>
+          <li><span class="check-dot"></span>Create new accounts from the dedicated Add Users page.</li>
+        {% else %}
+          <li><span class="check-dot"></span>Admin-only controls are intentionally hidden for your role.</li>
+          <li><span class="check-dot"></span>Contact an admin for account lifecycle actions.</li>
+        {% endif %}
+      </ul>
+      <div class="home-mini-note">
+        Security actions are logged for traceability and review.
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}

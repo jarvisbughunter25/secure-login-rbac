@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | Secure Access Portal{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <div class="stats-grid">
+    <article class="stat-card">
+      <h3>Total Users</h3>
+      <p>{{ total_users }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Admins</h3>
+      <p>{{ admin_count }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Active Accounts</h3>
+      <p>{{ active_count }}</p>
+    </article>
+    <article class="stat-card">
+      <h3>Locked Accounts</h3>
+      <p>{{ locked_count }}</p>
+    </article>
+  </div>
+
+  <div class="dashboard-card wide">
+    <div class="dashboard-header-row admin-toolbar">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Use this page to manage existing accounts (role, status, unlock, delete).</p>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="search-wrap">
+          <label for="adminUserSearch">Find user</label>
+          <input id="adminUserSearch" class="input" type="search" placeholder="Search by username, email, role">
+        </div>
+        <a href="{{ url_for('admin.add_users') }}" class="primary-button compact-link-button">Add User/Admin</a>
+      </div>
+    </div>
+
+    <div class="table-shell">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Lockout</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            {% set currently_locked = user.locked_until and user.locked_until > utcnow() %}
+            {% set is_last_admin = user.role.value == 'admin' and admin_count <= 1 %}
+            <tr data-user-row data-search="{{ user.username|lower }} {{ user.email|lower }} {{ user.role.value|lower }} {{ user.display_name|lower }}">
+              <td>{{ user.id }}</td>
+              <td>
+                <strong>{{ user.username }}</strong>
+                {% if g.current_user.id == user.id %}
+                  <span class="tiny-tag">You</span>
+                {% endif %}
+              </td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.role.value|upper }}</td>
+              <td>{{ 'Active' if user.is_active else 'Inactive' }}</td>
+              <td>
+                {% if currently_locked %}
+                  Locked until {{ user.locked_until }}
+                {% else %}
+                  No lock
+                {% endif %}
+              </td>
+              <td>{{ user.created_at }}</td>
+              <td>
+                <div class="action-stack">
+                  <form method="post" action="{{ url_for('admin.update_role', user_id=user.id) }}" class="inline-action-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <select name="role" class="compact-input role-select">
+                      <option value="user" {% if user.role.value == 'user' %}selected{% endif %}>User</option>
+                      <option value="admin" {% if user.role.value == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                    <button type="submit" class="secondary-button">Change Role</button>
+                  </form>
+
+                  <form method="post" action="{{ url_for('admin.update_status', user_id=user.id) }}" class="inline-action-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="is_active" value="{{ 'false' if user.is_active else 'true' }}">
+                    <button type="submit" class="secondary-button">{{ 'Deactivate' if user.is_active else 'Activate' }}</button>
+                  </form>
+
+                  <form method="post" action="{{ url_for('admin.unlock_user', user_id=user.id) }}" class="inline-action-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="secondary-button" {% if not currently_locked %}disabled{% endif %}>Unlock</button>
+                  </form>
+
+                  <form
+                    method="post"
+                    action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                    class="inline-action-form"
+                    data-confirm="Delete {{ user.username }} permanently? This cannot be undone."
+                    data-confirm-title="Delete Account"
+                    data-confirm-ok="Yes, Delete"
+                    data-confirm-cancel="Cancel"
+                    data-confirm-variant="danger"
+                  >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button
+                      type="submit"
+                      class="danger-button"
+                      {% if is_last_admin %}disabled title="Last admin cannot be deleted"{% endif %}
+                    >
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

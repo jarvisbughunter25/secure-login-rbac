@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Access Portal | Internship Project{% endblock %}
+
+{% block content %}
+<section class="landing-wrap">
+  <article class="dashboard-card landing-hero">
+    <div class="landing-copy">
+      <p class="home-kicker">Cyber Security Internship Project</p>
+      <h1>Secure Login System With Role-Based Access Control</h1>
+      <p>
+        A production-style internship project focused on secure authentication, account safety controls,
+        and admin-governed user lifecycle management.
+      </p>
+
+      <div class="landing-tags">
+        <span class="role-badge role-admin">JWT HttpOnly Cookies</span>
+        <span class="role-badge role-user">Argon2 Password Hashing</span>
+        <span class="role-badge role-admin">CAPTCHA + Lockout</span>
+        <span class="role-badge role-user">Admin RBAC Controls</span>
+      </div>
+    </div>
+
+    <aside class="dashboard-card landing-access-card">
+      <h2>Portal Access</h2>
+      <p>Continue to secure workspace using your account.</p>
+      <div class="landing-actions">
+        <a href="{{ url_for('auth.login') }}" class="primary-button">Sign In</a>
+        <a href="{{ url_for('auth.register') }}" class="secondary-button landing-signup">Sign Up</a>
+      </div>
+      <p class="hint">Only authenticated users can access protected routes and admin tools.</p>
+    </aside>
+  </article>
+
+  <article class="dashboard-card creator-card">
+    <h2>Project Owner</h2>
+    <div class="creator-meta">
+      <p><strong>Name:</strong> MD ATIF ALAM</p>
+      <p><strong>Email:</strong> <a href="mailto:atifalam2816@gmail.com">atifalam2816@gmail.com</a></p>
+    </div>
+    <p class="hint">This identity section is intentionally permanent for internship submission visibility.</p>
+  </article>
+</section>
+{% endblock %}

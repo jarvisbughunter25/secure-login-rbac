@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Add Users | Admin Panel{% endblock %}
+
+{% block content %}
+<section class="dashboard-wrap">
+  <div class="add-users-topbar">
+    <div>
+      <h1>Add Users</h1>
+      <p>Create a new User/Admin account from this dedicated admin-only page.</p>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="secondary-link">Manage Users/Admins</a>
+  </div>
+
+  <div class="add-users-layout">
+    <article class="dashboard-card add-users-main">
+      <h2>Create Account</h2>
+      <form method="post" action="{{ url_for('admin.add_users') }}" class="profile-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <label for="full_name">Full name (optional)</label>
+        {{ form.full_name(id='full_name', class_='input', placeholder='E.g. Ayaan Verma') }}
+        {% for error in form.full_name.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+        <label for="username">Username</label>
+        {{ form.username(id='username', class_='input', placeholder='E.g. ayaan_07') }}
+        {% for error in form.username.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+        <label for="email">Email</label>
+        {{ form.email(id='email', class_='input', placeholder='E.g. ayaan@example.com') }}
+        {% for error in form.email.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+        <label for="password">Temporary password</label>
+        {{ form.password(id='password', class_='input', placeholder='StrongPass1!', data_password_toggle='true', data_password_strength='true') }}
+        <p class="hint">Minimum 10 chars with upper, lower, number, and special character.</p>
+        {% for error in form.password.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+        <label for="role">Account role</label>
+        {{ form.role(id='role', class_='input add-user-role') }}
+        {% for error in form.role.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+        <button type="submit" class="primary-button">Create Account</button>
+      </form>
+    </article>
+
+    <article class="dashboard-card add-users-side">
+      <h3>Recent Accounts</h3>
+      <p>Latest accounts in the system (newest first).</p>
+      <div class="recent-list">
+        {% for member in recent_users %}
+          <div class="recent-item">
+            <div class="member-cell">
+              <img src="{{ avatar_url(member) }}" alt="{{ member.display_name }} avatar" class="member-avatar">
+              <div>
+                <strong>{{ member.display_name }}</strong>
+                <small>{{ member.email }}</small>
+              </div>
+            </div>
+            <span class="role-badge role-{{ member.role.value }}">{{ member.role.value|upper }}</span>
+          </div>
+        {% else %}
+          <p class="hint">No accounts found.</p>
+        {% endfor %}
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}
