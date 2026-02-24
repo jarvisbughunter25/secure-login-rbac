@@ -1,3 +1,5 @@
+![Security Project](https://img.shields.io/badge/security-project-green)
+
 # Secure Login System with RBAC (Flask + MySQL)
 
 A security-focused web application for internship evaluation. It includes secure authentication, role-based authorization, CAPTCHA, account lockout, and admin user management.
