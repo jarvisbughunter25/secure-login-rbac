@@ -245,3 +245,30 @@ Create these manually via registration:
 - User: `user_demo@example.com`
 
 Use strong passwords as required by policy.
+
+
+## 📸 Application Screenshots
+
+### 🏠 Landing Page
+![Landing Page](screenshots/01-landing-page.png)
+
+### 📝 Registration Page
+![Register](screenshots/02-register-page.png)
+
+### 🔐 Login Page
+![Login](screenshots/03-login-page.png)
+
+### 🛡️ Admin Dashboard
+![Admin Dashboard](screenshots/04-admin-dashboard.png)
+
+### ➕ Add User (Admin Only)
+![Add User](screenshots/05-admin-add-user.png)
+
+### ⚙️ Manage Users Panel
+![Manage Users](screenshots/06-admin-manage-users.png)
+
+### 👤 User Home
+![User Home](screenshots/07-user-home.png)
+
+### 📂 Members Directory (Read-Only)
+![Members Directory](screenshots/08-members-directory.png)
